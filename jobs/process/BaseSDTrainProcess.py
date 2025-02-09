@@ -686,14 +686,16 @@ class BaseSDTrainProcess(BaseTrainProcess):
         #     self.data_loader_reg = self.accelerator.prepare(self.data_loader_reg)
             
 
-    def ensure_params_requires_grad(self, force=False):
+    def ensure_params_requires_grad(self, force=True):
         if self.train_config.do_paramiter_swapping and not force:
             # the optimizer will handle this if we are not forcing
             return
         for group in self.params:
             for param in group['params']:
-                if isinstance(param, torch.nn.Parameter):  # Ensure it's a proper parameter
+                if isinstance(param, torch.nn.Parameter) and param.dtype != torch.int64:  # Ensure it's a proper parameter
                     param.requires_grad_(True)
+                else:
+                    param.requires_grad_(False)
 
     def setup_ema(self):
         if self.train_config.ema_config.use_ema:
@@ -1593,7 +1595,12 @@ class BaseSDTrainProcess(BaseTrainProcess):
                         num_replaced=len(self.network.get_all_modules()),
                     )
 
-                self.network.prepare_grad_etc(text_encoder, unet)
+                if self.network.network_type == "sborafa":
+                    self.network.prepare_grad_etc_sborafa(text_encoder, unet)
+                elif self.network.network_type == "sborafb":
+                    self.network.prepare_grad_etc_sborafb(text_encoder, unet)
+                else:
+                    self.network.prepare_grad_etc(text_encoder, unet)
                 flush()
 
                 # LyCORIS doesnt have default_lr

@@ -19,6 +19,8 @@ sys.path.append(SD_SCRIPTS_ROOT)
 
 from networks.lora import LoRANetwork, get_block_index
 from toolkit.models.DoRA import DoRAModule
+from toolkit.models.SBoRAFA import SBoRAFAModule
+from toolkit.models.SBoRAFB import SBoRAFBModule
 
 from torch.utils.checkpoint import checkpoint
 
@@ -228,6 +230,12 @@ class LoRASpecialNetwork(ToolkitNetworkMixin, LoRANetwork):
         if self.network_type.lower() == "dora":
             self.module_class = DoRAModule
             module_class = DoRAModule
+        elif self.network_type.lower() == "sborafa":
+            self.module_class = SBoRAFAModule
+            module_class = SBoRAFAModule
+        elif self.network_type.lower() == "sborafb":
+            self.module_class = SBoRAFBModule
+            module_class = SBoRAFBModule
 
         self.peft_format = peft_format
 
@@ -382,8 +390,12 @@ class LoRASpecialNetwork(ToolkitNetworkMixin, LoRANetwork):
                                 use_bias=use_bias,
                             )
                             loras.append(lora)
-                            lora_shape_dict[lora_name] = [list(lora.lora_down.weight.shape), list(lora.lora_up.weight.shape)
-                            ]
+                            if isinstance(lora, SBoRAFAModule):
+                                lora_shape_dict[lora_name] = [list(lora.lora_down.data.shape), list(lora.lora_up.weight.shape)]
+                            elif isinstance(lora, SBoRAFBModule):
+                                lora_shape_dict[lora_name] = [list(lora.lora_down.weight.shape), list(lora.lora_up.data.shape)]
+                            else:
+                                lora_shape_dict[lora_name] = [list(lora.lora_down.weight.shape), list(lora.lora_up.weight.shape)]
             return loras, skipped
 
         text_encoders = text_encoder if type(text_encoder) == list else [text_encoder]

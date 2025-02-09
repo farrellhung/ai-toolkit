@@ -1,6 +1,6 @@
 [submodule "repositories/sd-scripts"]
 	path = repositories/sd-scripts
-	url = https://github.com/kohya-ss/sd-scripts.git
+	url = https://github.com/farrellhung/sd-scripts.git
 [submodule "repositories/leco"]
 	path = repositories/leco
 	url = https://github.com/p1atdev/LECO
