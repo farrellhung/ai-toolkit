@@ -35,6 +35,8 @@ import math
 from toolkit.train_tools import precondition_model_outputs_flow_match
 from toolkit.models.diffusion_feature_extraction import DiffusionFeatureExtractor, load_dfe
 
+import custom_regularization
+
 
 def flush():
     torch.cuda.empty_cache()
@@ -1653,7 +1655,11 @@ class SDTrainer(BaseSDTrainProcess):
                     # else:
                     self.accelerator.backward(loss)
 
-        return loss.detach()
+        input_prob = input.float()      # use unnormalized logits
+        # input_prob = input_prob.softmax(dim=2)
+        # input_prob = input_prob.log_softmax(dim=2)
+
+        return loss.detach() + custom_regularization.basis_regularization(input_prob, 0) + custom_regularization.orthogonal_regularization(input_prob, 0)
         # flush()
 
     def hook_train_loop(self, batch: Union[DataLoaderBatchDTO, List[DataLoaderBatchDTO]]):

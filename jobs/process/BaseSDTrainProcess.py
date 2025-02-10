@@ -1861,6 +1861,10 @@ class BaseSDTrainProcess(BaseTrainProcess):
         # make sure all params require grad
         self.ensure_params_requires_grad(force=True)
 
+        for loss_file in ['loss.txt','ortho_loss.txt','basis_loss.txt']:
+            f = open(loss_file, 'a')
+            f.write('Train begins\n')
+            f.close()
 
         ###################################################################
         # TRAIN LOOP
