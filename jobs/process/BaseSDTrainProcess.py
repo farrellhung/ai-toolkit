@@ -1958,6 +1958,9 @@ class BaseSDTrainProcess(BaseTrainProcess):
             ### HOOK ###
             with self.accelerator.accumulate(self.modules_being_trained):
                 loss_dict = self.hook_train_loop(batch_list)
+            f = open('loss.txt', 'a')
+            f.write(str(loss_dict['loss'])+'\n')
+            f.close()
             self.timer.stop('train_loop')
             if not did_first_flush:
                 flush()

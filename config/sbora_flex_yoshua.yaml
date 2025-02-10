@@ -19,7 +19,7 @@ config:
         linear_alpha: 16
       save:
         dtype: float16 # precision to save
-        save_every: 400 # save every this many steps
+        save_every: 600 # save every this many steps
         max_step_saves_to_keep: 1 # how many intermittent saves to keep
         push_to_hub: false #change this to True to push your trained model to Hugging Face.
         # You can either set up a HF_TOKEN env variable or you'll be prompted to log-in         
@@ -31,7 +31,7 @@ config:
         # images will automatically be resized and bucketed into the resolution specified
         # on windows, escape back slashes with another backslash so
         # "C:\\path\\to\\images\\folder"
-        - folder_path: "/workspace/flux-finetune/dataset/512/yoshua-bengio"
+        - folder_path: "/workspace/ai-toolkit/dataset/512/yoshua-bengio"
           caption_ext: "txt"
           caption_dropout_rate: 0.05  # will drop out the caption 5% of time
           shuffle_tokens: false  # shuffle caption order, split by commas
@@ -42,7 +42,7 @@ config:
         # IMPORTANT! For Flex, you must bypass the guidance embedder during training
         bypass_guidance_embedding: true
         
-        steps: 800  # total number of steps to train 500 - 4000 is a good range
+        steps: 1000  # total number of steps to train 500 - 4000 is a good range
         gradient_accumulation: 1
         train_unet: true
         train_text_encoder: false  # probably won't work with flex
@@ -80,12 +80,14 @@ config:
         prompts:
           # you can add [trigger] to the prompts here and it will be replaced with the trigger word
 #          - "[trigger] holding a sign that says 'I LOVE PROMPTS!'"\
-          - "realistic potrait of a man in winter clothing carrying firewoods in front of a house"
-          - "realistic potrait of a man [trigger] in winter clothing carrying firewoods in front of a house"
-          - "a professional in green suit giving a speech with his hand holding a microphone; front view"
-          - "a professional [trigger] in green suit giving a speech with his hand holding a microphone; front view"
+          - "realistic potrait of a man, in winter clothing, carrying an axe on his shoulder"
+          - "realistic potrait of a man [trigger], in winter clothing, carrying an axe on his shoulder"
+          - "professional in blue suit, giving a speech, his hand holding a microphone, front view"
+          - "professional [trigger] in blue suit, giving a speech, his hand holding a microphone, front view"
+          - "photo of a man playing chess, medium shot, white background"
+          - "photo of a man [trigger] playing chess, medium shot, white background"
         neg: ""  # not used on flex
-        seed: 10
+        seed: 1
         walk_seed: false
         guidance_scale: 4
         sample_steps: 25
