@@ -35,7 +35,7 @@ import math
 from toolkit.train_tools import precondition_model_outputs_flow_match
 from toolkit.models.diffusion_feature_extraction import DiffusionFeatureExtractor, load_dfe
 
-import custom_regularization
+from . import custom_regularization
 
 
 def flush():
@@ -535,6 +535,11 @@ class SDTrainer(BaseSDTrainProcess):
             norm_std_loss = torch.abs(self.train_config.target_norm_std_value - pred_std).mean()
             loss = loss + norm_std_loss
 
+        input_prob = pred.float()      # use unnormalized logits
+        # input_prob = input_prob.softmax(dim=2)
+        # input_prob = input_prob.log_softmax(dim=2)
+         
+        additional_loss += custom_regularization.basis_regularization(input_prob, 0) + custom_regularization.orthogonal_regularization(input_prob, 0)
 
         return loss + additional_loss
 
@@ -1655,11 +1660,7 @@ class SDTrainer(BaseSDTrainProcess):
                     # else:
                     self.accelerator.backward(loss)
 
-        input_prob = input.float()      # use unnormalized logits
-        # input_prob = input_prob.softmax(dim=2)
-        # input_prob = input_prob.log_softmax(dim=2)
-
-        return loss.detach() + custom_regularization.basis_regularization(input_prob, 0) + custom_regularization.orthogonal_regularization(input_prob, 0)
+        return loss.detach()
         # flush()
 
     def hook_train_loop(self, batch: Union[DataLoaderBatchDTO, List[DataLoaderBatchDTO]]):
