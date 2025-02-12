@@ -2,7 +2,7 @@
 job: extension
 config:
   # this name will be the folder and filename name
-  name: "sbora_flex_yoshua"
+  name: "sbora_flex_yoshua_reg"
   process:
     - type: 'sd_trainer'
       # root folder to save training sessions/samples/weights
@@ -31,7 +31,7 @@ config:
         # images will automatically be resized and bucketed into the resolution specified
         # on windows, escape back slashes with another backslash so
         # "C:\\path\\to\\images\\folder"
-        - folder_path: "/workspace/ai-toolkit/dataset/512/yoshua-bengio"
+        - folder_path: "/workspace/ai-toolkit/dataset/512/yoshua-bengio-reg"
           caption_ext: "txt"
           caption_dropout_rate: 0.05  # will drop out the caption 5% of time
           shuffle_tokens: false  # shuffle caption order, split by commas
