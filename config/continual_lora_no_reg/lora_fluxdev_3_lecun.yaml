@@ -31,7 +31,7 @@ config:
         # images will automatically be resized and bucketed into the resolution specified
         # on windows, escape back slashes with another backslash so
         # "C:\\path\\to\\images\\folder"
-        - folder_path: "/workspace/ai-toolkit/dataset/512/yann-lecun"
+        - folder_path: "/workspace/ai-toolkit/dataset/512/lecun"
           caption_ext: "txt"
           caption_dropout_rate: 0.05  # will drop out the caption 5% of time
           shuffle_tokens: false  # shuffle caption order, split by commas
@@ -46,7 +46,7 @@ config:
         gradient_checkpointing: true  # need the on unless you have a ton of vram
         noise_scheduler: "flowmatch" # for training only
         optimizer: "adamw8bit"
-        lr: 4e-4
+        lr: 1e-4
         # uncomment this to skip the pre training sample
 #        skip_first_sample: true
         # uncomment to completely disable sampling
@@ -75,11 +75,11 @@ config:
         prompts:
           # you can add [trigger] to the prompts here and it will be replaced with the trigger word
 #          - "[trigger] holding a sign that says 'I LOVE PROMPTS!'"\
-          - "man, upper body"
-          - "man, bengio, upper body"
-          - "man, hinton, upper body"
-          - "man, lecun, upper body"
-          - "photograph of man, bengio, hinton, lecun"
+          - "man"
+          - "man, bengio"
+          - "man, hinton"
+          - "man, lecun"
+          - "photograph of bengio, with hinton, with lecun, together"
         neg: ""  # not used on flux
         seed: 1
         walk_seed: false
