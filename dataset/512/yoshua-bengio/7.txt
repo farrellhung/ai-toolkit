@@ -1,1 +1,1 @@
-[trigger], upper body, window, indoors
+man, bengio, upper body

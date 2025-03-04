@@ -2,25 +2,25 @@
 job: extension
 config:
   # this name will be the folder and filename name
-  name: "sbora_flex_yoshua"
+  name: "inclora"
   process:
     - type: 'sd_trainer'
       # root folder to save training sessions/samples/weights
       training_folder: "output"
       # uncomment to see performance stats in the terminal every N steps
-      performance_log_every: 200
+#      performance_log_every: 1000
       device: cuda:0
       # if a trigger word is specified, it will be added to captions of training data if it does not already exist
       # alternatively, in your captions you can add [trigger] and it will be replaced with the trigger word
 #      trigger_word: "p3r5on"
       network:
-        type: "sborafa"
-        linear: 16
-        linear_alpha: 16
+        type: "lora"
+        linear: 32
+        linear_alpha: 32
       save:
         dtype: float16 # precision to save
-        save_every: 600 # save every this many steps
-        max_step_saves_to_keep: 1 # how many intermittent saves to keep
+        save_every: 300 # save every this many steps
+        max_step_saves_to_keep: 6 # how many intermittent saves to keep
         push_to_hub: false #change this to True to push your trained model to Hugging Face.
         # You can either set up a HF_TOKEN env variable or you'll be prompted to log-in         
 #       hf_repo_id: your-username/your-model-slug
@@ -36,20 +36,17 @@ config:
           caption_dropout_rate: 0.05  # will drop out the caption 5% of time
           shuffle_tokens: false  # shuffle caption order, split by commas
           cache_latents_to_disk: true  # leave this true unless you know what you're doing
-          resolution: [ 512, 768, 1024 ]  # flex enjoys multiple resolutions
+          resolution: [ 512 ]  # flex enjoys multiple resolutions
       train:
         batch_size: 1
-        # IMPORTANT! For Flex, you must bypass the guidance embedder during training
-        bypass_guidance_embedding: true
-        
-        steps: 1000  # total number of steps to train 500 - 4000 is a good range
-        gradient_accumulation: 1
+        steps: 600  # total number of steps to train 500 - 4000 is a good range
+        gradient_accumulation_steps: 1
         train_unet: true
-        train_text_encoder: false  # probably won't work with flex
+        train_text_encoder: false  # probably won't work with flux
         gradient_checkpointing: true  # need the on unless you have a ton of vram
         noise_scheduler: "flowmatch" # for training only
         optimizer: "adamw8bit"
-        lr: 1e-4
+        lr: 4e-4
         # uncomment this to skip the pre training sample
 #        skip_first_sample: true
         # uncomment to completely disable sampling
@@ -62,35 +59,32 @@ config:
           use_ema: true
           ema_decay: 0.99
 
-        # will probably need this if gpu supports it for flex, other dtypes may not work correctly
+        # will probably need this if gpu supports it for flux, other dtypes may not work correctly
         dtype: bf16
       model:
         # huggingface model name or path
-        name_or_path: "ostris/Flex.1-alpha"
+        name_or_path: "black-forest-labs/FLUX.1-dev"
         is_flux: true
         quantize: true  # run 8bit mixed precision
-        quantize_kwargs:
-          exclude:
-            - "*time_text_embed*"  # exclude the time text embedder from quantization
+#        low_vram: true  # uncomment this if the GPU is connected to your monitors. It will use less vram to quantize, but is slower.
       sample:
         sampler: "flowmatch" # must match train.noise_scheduler
-        sample_every: 200 # sample every this many steps
+        sample_every: 300 # sample every this many steps
         width: 1024
         height: 1024
         prompts:
           # you can add [trigger] to the prompts here and it will be replaced with the trigger word
 #          - "[trigger] holding a sign that says 'I LOVE PROMPTS!'"\
-          - "photo of man"
-          - "photo of [trigger]"
-          - "professional in blue suit, giving a speech, his hand holding a microphone, front view"
-          - "professional [trigger] in blue suit, giving a speech, his hand holding a microphone, front view"
-          - "a man with his friend, the man is holding a baseball, his friend is holding a bat, looking at viewer"
-          - "a man [trigger] with his friend, the man [trigger] is holding a baseball, his friend is holding a bat, looking at viewer"
-        neg: ""  # not used on flex
+          - "man, upper body"
+          - "man, bengio, upper body"
+          - "man, hinton, upper body"
+          - "man, lecun, upper body"
+          - "photograph of man, bengio, hinton, lecun"
+        neg: ""  # not used on flux
         seed: 1
         walk_seed: false
         guidance_scale: 4
-        sample_steps: 25
+        sample_steps: 20
 # you can add any additional meta info here. [name] is replaced with config name at top
 meta:
   name: "[name]"
