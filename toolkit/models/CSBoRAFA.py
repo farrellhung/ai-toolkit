@@ -84,9 +84,7 @@ class CSBoRAFAModule(ToolkitModuleMixin, ExtractableModuleMixin, torch.nn.Module
         self.lora_up = nn.Linear(self.lora_dim, d_out, bias=False)
         self.lora_up.weight.data = torch.zeros_like(self.lora_up.weight.data)
         self.lora_down = nn.Parameter(torch.randint(d_in, (self.lora_dim,), device=self.lora_up.weight.device), requires_grad=False)
-
-        print(self.lora_up.size(), self.lora_down.size())
-
+        
         # m = Magnitude column-wise across output dimension
         weight = self.get_orig_weight()
         weight = weight.to(self.lora_up.weight.device, dtype=self.lora_up.weight.dtype)
