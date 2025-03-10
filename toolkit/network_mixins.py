@@ -24,9 +24,10 @@ if TYPE_CHECKING:
     from toolkit.models.DoRA import DoRAModule
     from toolkit.models.SBoRAFA import SBoRAFAModule
     from toolkit.models.SBoRAFB import SBoRAFBModule
+    from toolkit.models.CSBoRAFA import CSBoRAFAModule
 
 Network = Union['LycorisSpecialNetwork', 'LoRASpecialNetwork']
-Module = Union['LoConSpecialModule', 'LoRAModule', 'DoRAModule', 'SBoRAFAModule', 'SBoRAFBModule']
+Module = Union['LoConSpecialModule', 'LoRAModule', 'DoRAModule', 'SBoRAFAModule', 'SBoRAFBModule', 'CSBoRAFAModule']
 
 LINEAR_MODULES = [
     'Linear',
@@ -141,12 +142,20 @@ class ExtractableModuleMixin:
         self.lora_dim = new_dim
 
         # inject weights into the param
-        self.lora_down.weight.data = down_weight.to(self.lora_down.weight.dtype).clone().detach()
-        self.lora_up.weight.data = up_weight.to(self.lora_up.weight.dtype).clone().detach()
+        
+        if self.__class__.__name__ == "CSBoRAFAModule":
+            self.prev_lora_down.weight.data = down_weight.to(self.lora_down.weight.dtype).clone().detach()
+            self.prev_lora_up.weight.data = up_weight.to(self.lora_up.weight.dtype).clone().detach()
+            # copy bias if we have one and are using them
+            if self.org_module[0].bias is not None and self.prev_lora_up.bias is not None:
+                self.prev_lora_up.bias.data = self.org_module[0].bias.data.clone().detach()
+        else:
+            self.lora_down.weight.data = down_weight.to(self.lora_down.weight.dtype).clone().detach()
+            self.lora_up.weight.data = up_weight.to(self.lora_up.weight.dtype).clone().detach()
+            # copy bias if we have one and are using them
+            if self.org_module[0].bias is not None and self.lora_up.bias is not None:
+                self.lora_up.bias.data = self.org_module[0].bias.data.clone().detach()
 
-        # copy bias if we have one and are using them
-        if self.org_module[0].bias is not None and self.lora_up.bias is not None:
-            self.lora_up.bias.data = self.org_module[0].bias.data.clone().detach()
 
         # set up alphas
         self.alpha = (self.alpha * 0) + down_weight.shape[0]
@@ -345,6 +354,10 @@ class ToolkitModuleMixin:
         up_weight = self.lora_up.weight.clone().float()
         down_weight = self.lora_down.weight.clone().float()
 
+        if self.__class__.__name__ == "CSBoRAFAModule":
+            prev_up_weight = self.prev_lora_up.weight.clone().float()
+            prev_down_weight = self.prev_lora_down.weight.clone().float()
+
         # extract weight from org_module
         org_sd = self.org_module[0].state_dict()
         # todo find a way to merge in weights when doing quantized model
@@ -369,20 +382,29 @@ class ToolkitModuleMixin:
         # merge weight
         if len(weight.size()) == 2:
             # linear
-            weight = weight + multiplier * (up_weight @ down_weight) * scale
+            if self.__class__.__name__ == "CSBoRAFAModule":
+                weight += multiplier * (prev_up_weight @ prev_down_weight) * scale
+            weight += multiplier * (up_weight @ down_weight) * scale
         elif down_weight.size()[2:4] == (1, 1):
             # conv2d 1x1
-            weight = (
-                    weight
-                    + multiplier
+            if self.__class__.__name__ == "CSBoRAFAModule":
+                weight += (
+                        multiplier
+                        * (prev_up_weight.squeeze(3).squeeze(2) @ prev_down_weight.squeeze(3).squeeze(2)).unsqueeze(2).unsqueeze(3)
+                        * scale
+                )
+            weight += (
+                    multiplier
                     * (up_weight.squeeze(3).squeeze(2) @ down_weight.squeeze(3).squeeze(2)).unsqueeze(2).unsqueeze(3)
                     * scale
             )
         else:
             # conv2d 3x3
+            if self.__class__.__name__ == "CSBoRAFAModule":
+                conved = torch.nn.functional.conv2d(prev_down_weight.permute(1, 0, 2, 3), prev_up_weight).permute(1, 0, 2, 3)
+                weight += multiplier * conved * scale
             conved = torch.nn.functional.conv2d(down_weight.permute(1, 0, 2, 3), up_weight).permute(1, 0, 2, 3)
-            # print(conved.size(), weight.size(), module.stride, module.padding)
-            weight = weight + multiplier * conved * scale
+            weight += multiplier * conved * scale
 
         # set weight to org_module
         org_sd[weight_key] = weight.to(orig_dtype)
@@ -622,7 +644,7 @@ class ToolkitNetworkMixin:
         multiplier = self._multiplier
         # get first module
         first_module = self.get_all_modules()[0]
-        if self.network_type == "sborafa":
+        if self.network_type == "sborafa" or self.network_type == "csborafa":
             device = first_module.lora_up.weight.device
             dtype = first_module.lora_up.weight.dtype
         else:
@@ -696,7 +718,7 @@ class ToolkitNetworkMixin:
         self._update_checkpointing()
 
     def merge_in(self, merge_weight=1.0):
-        if self.network_type.lower() in ['dora','sborafa','sborafb']:
+        if self.network_type.lower() in ['dora','sborafa','sborafb','csborafa']:
             return
         self.is_merged_in = True
         for module in self.get_all_modules():

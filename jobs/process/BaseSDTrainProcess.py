@@ -1595,9 +1595,9 @@ class BaseSDTrainProcess(BaseTrainProcess):
                         num_replaced=len(self.network.get_all_modules()),
                     )
 
-                if self.network.network_type == "sborafa":
+                if self.network.network_type == "sborafa" or self.network.network_type == "csborafa":
                     self.network.prepare_grad_etc_sborafa(text_encoder, unet)
-                elif self.network.network_type == "sborafb":
+                elif self.network.network_type == "sborafb" or self.network.network_type == "csborafb":
                     self.network.prepare_grad_etc_sborafb(text_encoder, unet)
                 else:
                     self.network.prepare_grad_etc(text_encoder, unet)

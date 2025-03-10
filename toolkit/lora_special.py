@@ -22,6 +22,8 @@ from toolkit.models.DoRA import DoRAModule
 from toolkit.models.SBoRAFA import SBoRAFAModule
 from toolkit.models.SBoRAFB import SBoRAFBModule
 
+from toolkit.models.CSBoRAFA import CSBoRAFAModule
+
 from torch.utils.checkpoint import checkpoint
 
 RE_UPDOWN = re.compile(r"(up|down)_blocks_(\d+)_(resnets|upsamplers|downsamplers|attentions)_(\d+)_")
@@ -236,6 +238,9 @@ class LoRASpecialNetwork(ToolkitNetworkMixin, LoRANetwork):
         elif self.network_type.lower() == "sborafb":
             self.module_class = SBoRAFBModule
             module_class = SBoRAFBModule
+        elif self.network_type.lower() == "csborafa":
+            self.module_class = CSBoRAFAModule
+            module_class = CSBoRAFAModule
 
         self.peft_format = peft_format
 
@@ -390,7 +395,7 @@ class LoRASpecialNetwork(ToolkitNetworkMixin, LoRANetwork):
                                 use_bias=use_bias,
                             )
                             loras.append(lora)
-                            if isinstance(lora, SBoRAFAModule):
+                            if isinstance(lora, SBoRAFAModule) or isinstance(lora, CSBoRAFAModule):
                                 lora_shape_dict[lora_name] = [list(lora.lora_down.data.shape), list(lora.lora_up.weight.shape)]
                             elif isinstance(lora, SBoRAFBModule):
                                 lora_shape_dict[lora_name] = [list(lora.lora_down.weight.shape), list(lora.lora_up.data.shape)]
