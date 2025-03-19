@@ -2,7 +2,7 @@
 job: extension
 config:
   # this name will be the folder and filename name
-  name: "inclora_order3_1"
+  name: "csbora_order5_1"
   process:
     - type: 'sd_trainer'
       # root folder to save training sessions/samples/weights
@@ -14,12 +14,12 @@ config:
       # alternatively, in your captions you can add [trigger] and it will be replaced with the trigger word
 #      trigger_word: "p3r5on"
       network:
-        type: "lora"
-        linear: 64
-        linear_alpha: 64
+        type: "csborafa"
+        linear: 256
+        linear_alpha: 256
       save:
         dtype: float16 # precision to save
-        save_every: 400 # save every this many steps
+        save_every: 300 # save every this many steps
         max_step_saves_to_keep: 6 # how many intermittent saves to keep
         push_to_hub: false #change this to True to push your trained model to Hugging Face.
         # You can either set up a HF_TOKEN env variable or you'll be prompted to log-in         
@@ -31,7 +31,7 @@ config:
         # images will automatically be resized and bucketed into the resolution specified
         # on windows, escape back slashes with another backslash so
         # "C:\\path\\to\\images\\folder"
-        - folder_path: "/workspace/ai-toolkit/dataset/512/closeup/SAM_ALTMAN"
+        - folder_path: "/workspace/ai-toolkit/dataset/512/closeup/MAGNUS_CARLSEN"
           caption_ext: "txt"
           caption_dropout_rate: 0.05  # will drop out the caption 5% of time
           shuffle_tokens: false  # shuffle caption order, split by commas
@@ -39,7 +39,7 @@ config:
           resolution: [ 512 ]  # flex enjoys multiple resolutions
       train:
         batch_size: 1
-        steps: 800  # total number of steps to train 500 - 4000 is a good range
+        steps: 900  # total number of steps to train 500 - 4000 is a good range
         gradient_accumulation_steps: 1
         train_unet: true
         train_text_encoder: false  # probably won't work with flux
@@ -69,7 +69,7 @@ config:
 #        low_vram: true  # uncomment this if the GPU is connected to your monitors. It will use less vram to quantize, but is slower.
       sample:
         sampler: "flowmatch" # must match train.noise_scheduler
-        sample_every: 400 # sample every this many steps
+        sample_every: 300 # sample every this many steps
         width: 1024
         height: 1024
         prompts:
@@ -78,7 +78,8 @@ config:
           - "man, YANN_LECUN, close up shot"
           - "man, SAM_ALTMAN, close up shot"
           - "man, MAGNUS_CARLSEN, close up shot"
-          - "photograph of YANN_LECUN on the left, SAM_ALTMAN on the middle, and MAGNUS_CARLSEN on the right"
+          - "man, DONALD_TRUMP, close up shot"
+          - "man, HIKARU_NAKAMURA, close up shot"
         neg: ""  # not used on flux
         seed: 1
         walk_seed: false
