@@ -2,7 +2,7 @@
 job: extension
 config:
   # this name will be the folder and filename name
-  name: "csbora_order1"
+  name: "csbora_order3_1"
   process:
     - type: 'sd_trainer'
       # root folder to save training sessions/samples/weights
