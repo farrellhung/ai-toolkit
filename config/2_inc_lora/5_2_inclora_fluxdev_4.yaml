@@ -15,8 +15,8 @@ config:
 #      trigger_word: "p3r5on"
       network:
         type: "lora"
-        linear: 128
-        linear_alpha: 128
+        linear: 64
+        linear_alpha: 64
       save:
         dtype: float16 # precision to save
         save_every: 300 # save every this many steps

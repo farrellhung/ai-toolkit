@@ -15,8 +15,8 @@ config:
 #      trigger_word: "p3r5on"
       network:
         type: "csborafa"
-        linear: 256
-        linear_alpha: 256
+        linear: 128
+        linear_alpha: 128
       save:
         dtype: float16 # precision to save
         save_every: 300 # save every this many steps
