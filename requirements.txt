@@ -2,7 +2,7 @@ torch==2.5.1
 torchvision==0.20.1
 safetensors
 diffusers==0.32.2
-transformers
+transformers==4.49.0
 lycoris-lora==1.8.3
 flatten_json
 pyyaml
