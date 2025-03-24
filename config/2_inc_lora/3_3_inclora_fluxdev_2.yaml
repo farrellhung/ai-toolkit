@@ -31,7 +31,7 @@ config:
         # images will automatically be resized and bucketed into the resolution specified
         # on windows, escape back slashes with another backslash so
         # "C:\\path\\to\\images\\folder"
-        - folder_path: "/workspace/ai-toolkit/dataset/512/closeup/MAGNUS_CARLSEN"
+        - folder_path: "/workspace/ai-toolkit/dataset/512/closeup/MACA3"
           caption_ext: "txt"
           caption_dropout_rate: 0.05  # will drop out the caption 5% of time
           shuffle_tokens: false  # shuffle caption order, split by commas
@@ -75,10 +75,10 @@ config:
         prompts:
           # you can add [trigger] to the prompts here and it will be replaced with the trigger word
 #          - "[trigger] holding a sign that says 'I LOVE PROMPTS!'"\
-          - "man, SAM_ALTMAN, close up shot"
-          - "man, MAGNUS_CARLSEN, close up shot"
-          - "man, YANN_LECUN, close up shot"
-          - "photograph of SAM_ALTMAN on the left, MAGNUS_CARLSEN on the middle, and YANN_LECUN on the right"
+          - "man, SAAL4, close up shot"
+          - "man, MACA3, close up shot"
+          - "man, YALE5, close up shot"
+          - "photograph of SAAL4 on the left, MACA3 on the middle, and YALE5 on the right"
         neg: ""  # not used on flux
         seed: 1
         walk_seed: false
