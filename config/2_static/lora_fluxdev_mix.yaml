@@ -31,19 +31,19 @@ config:
         # images will automatically be resized and bucketed into the resolution specified
         # on windows, escape back slashes with another backslash so
         # "C:\\path\\to\\images\\folder"
-        - folder_path: "/workspace/ai-toolkit/dataset/512/closeup/MACA3"
+        - folder_path: "/workspace/ai-toolkit/dataset/512/closeup/M4GN53"
           caption_ext: "txt"
           caption_dropout_rate: 0.05  # will drop out the caption 5% of time
           shuffle_tokens: false  # shuffle caption order, split by commas
           cache_latents_to_disk: true  # leave this true unless you know what you're doing
           resolution: [ 512 ]  # flex enjoys multiple resolutions
-        - folder_path: "/workspace/ai-toolkit/dataset/512/closeup/SAAL4"
+        - folder_path: "/workspace/ai-toolkit/dataset/512/closeup/S4M4L4"
           caption_ext: "txt"
           caption_dropout_rate: 0.05  # will drop out the caption 5% of time
           shuffle_tokens: false  # shuffle caption order, split by commas
           cache_latents_to_disk: true  # leave this true unless you know what you're doing
           resolution: [ 512 ]  # flex enjoys multiple resolutions
-        - folder_path: "/workspace/ai-toolkit/dataset/512/closeup/YALE5"
+        - folder_path: "/workspace/ai-toolkit/dataset/512/closeup/Y4NL35"
           caption_ext: "txt"
           caption_dropout_rate: 0.05  # will drop out the caption 5% of time
           shuffle_tokens: false  # shuffle caption order, split by commas
@@ -87,10 +87,10 @@ config:
         prompts:
           # you can add [trigger] to the prompts here and it will be replaced with the trigger word
 #          - "[trigger] holding a sign that says 'I LOVE PROMPTS!'"\
-          - "man, MACA3"
-          - "man, SAAL4"
-          - "man, YALE5"
-          - "photograph of MACA3, with SAAL4, with YALE5, together"
+          - "man, M4GN53, close up shot"
+          - "man, S4M4L4, close up shot"
+          - "man, Y4NL35, close up shot"
+          - "photograph of M4GN53, with S4M4L4, with Y4NL35, together"
         neg: ""  # not used on flux
         seed: 1
         walk_seed: false
