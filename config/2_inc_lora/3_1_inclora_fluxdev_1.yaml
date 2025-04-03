@@ -77,10 +77,10 @@ config:
 #          - "[trigger] holding a sign that says 'I LOVE PROMPTS!'"\
           - "man, Y4NL35, close up shot"
           - "man, S4M4L4, close up shot"
-          - "man, M4GN53, close up shot"
-          - "photograph of Y4NL35 on the left, S4M4L4 on the middle, and M4GN53 on the right"
+          - "man, C4R7S3, close up shot"
+          - "photograph of Y4NL35 on the left, S4M4L4 on the middle, and C4R7S3 on the right"
         neg: ""  # not used on flux
-        seed: 1
+        seed: 2
         walk_seed: false
         guidance_scale: 4
         sample_steps: 20
